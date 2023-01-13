@@ -19,8 +19,8 @@ function Barrier(reverse = false) {
 // b.setAltura(300)
 // document.querySelector('[p-flappy]').appendChild(b.element)
 
-function DoubleBarriers(altura, abertura, x){
-    this.element = newElement('div','barriers')
+function DoubleBarriers(altura, abertura, x) {
+    this.element = newElement('div', 'barriers')
 
     this.superior = new Barrier(true)
     this.inferior = new Barrier(false)
@@ -28,7 +28,7 @@ function DoubleBarriers(altura, abertura, x){
     this.element.appendChild(this.superior.element)
     this.element.appendChild(this.inferior.element)
 
-    this.aperture = () =>{
+    this.aperture = () => {
         const alturaSuperior = Math.random() * (altura - abertura)
         const alturaInferior = altura - abertura - alturaSuperior
         this.superior.setAltura(alturaSuperior)
@@ -41,3 +41,37 @@ function DoubleBarriers(altura, abertura, x){
     this.aperture()
     this.setX(x)
 }
+
+function Barriers(altura, largura, abertura, espaco, pontos) {
+    this.pares = [
+        new DoubleBarriers(altura, abertura, largura),
+        new DoubleBarriers(altura, abertura, largura + espaco),
+        new DoubleBarriers(altura, abertura, largura + espaco * 2),
+        new DoubleBarriers(altura, abertura, largura + espaco * 3)
+    ]
+
+    const deslocamento = 3
+    this.animar = () => {
+        this.pares.forEach(par => {
+
+            par.setX(par.getX() - deslocamento)
+            if (par.getX() < -par.getLargura()) {
+                par.setX(par.getX() + espaco * this.pares.length)
+                par.aperture()
+            }
+            const meio = largura / 2
+            const cruzouMeio = par.getX() + deslocamento >= meio
+                && par.getX < meio
+            if (cruzouMeio) pontos()
+        })
+    }
+
+}
+
+const barreiras = new Barriers(700, 1200, 200, 400)
+const areaDoJogo = document.querySelector('[p-flappy]')
+barreiras.pares.forEach(par => areaDoJogo.appendChild(par.element))
+
+setInterval(() => {
+    barreiras.animar()
+}, 20)
