@@ -68,10 +68,43 @@ function Barriers(altura, largura, abertura, espaco, pontos) {
 
 }
 
+function Bird(alturaJogo){
+    let fly = false
+    
+    this.element = newElement('img', 'bird')
+    this.element.src = 'img/passaro.png'
+
+    this.getY = () => parseInt(this.element.style.bottom.split('px')[0])
+    this.setY = y => this.element.style.bottom = `${y}px`
+
+    window.onkeydown = e => fly = true
+    window.onkeyup = e => fly = false
+    window.onmousedown = e => fly = true
+    window.onmouseup = e => fly = false
+
+    this.animar = () => {
+        const novoY = this.getY() + (fly ? 8 : -5)
+        const alturaMaxima = alturaJogo - this.element.clientHeight
+
+        if(novoY <= 0){
+            this.setY(0)
+        }else if (novoY >= alturaMaxima){
+            this.setY(alturaMaxima)
+        }else{
+            this.setY(novoY)
+        }
+    }
+    this.setY(alturaJogo / 2)
+}
+
 const barreiras = new Barriers(700, 1200, 200, 400)
+const bird = new Bird(700)
 const areaDoJogo = document.querySelector('[p-flappy]')
+
+areaDoJogo.appendChild(bird.element)
 barreiras.pares.forEach(par => areaDoJogo.appendChild(par.element))
 
 setInterval(() => {
     barreiras.animar()
+    bird.animar()
 }, 20)
