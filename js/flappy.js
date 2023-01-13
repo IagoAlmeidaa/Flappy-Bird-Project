@@ -42,7 +42,7 @@ function DoubleBarriers(altura, abertura, x) {
     this.setX(x)
 }
 
-function Barriers(altura, largura, abertura, espaco, pontos) {
+function Barriers(altura, largura, abertura, espaco, infopontos) {
     this.pares = [
         new DoubleBarriers(altura, abertura, largura),
         new DoubleBarriers(altura, abertura, largura + espaco),
@@ -61,16 +61,16 @@ function Barriers(altura, largura, abertura, espaco, pontos) {
             }
             const meio = largura / 2
             const cruzouMeio = par.getX() + deslocamento >= meio
-                && par.getX < meio
-            if (cruzouMeio) pontos()
+                && par.getX() < meio
+            if (cruzouMeio) infopontos()
         })
     }
 
 }
 
-function Bird(alturaJogo){
+function Bird(alturaJogo) {
     let fly = false
-    
+
     this.element = newElement('img', 'bird')
     this.element.src = 'img/passaro.png'
 
@@ -86,25 +86,60 @@ function Bird(alturaJogo){
         const novoY = this.getY() + (fly ? 8 : -5)
         const alturaMaxima = alturaJogo - this.element.clientHeight
 
-        if(novoY <= 0){
+        if (novoY <= 0) {
             this.setY(0)
-        }else if (novoY >= alturaMaxima){
+        } else if (novoY >= alturaMaxima) {
             this.setY(alturaMaxima)
-        }else{
+        } else {
             this.setY(novoY)
         }
     }
     this.setY(alturaJogo / 2)
 }
 
-const barreiras = new Barriers(700, 1200, 200, 400)
-const bird = new Bird(700)
-const areaDoJogo = document.querySelector('[p-flappy]')
+function Progress() {
+    this.element = newElement('span', 'progresso')
+    this.updatePoint = pontos => {
+        this.element.innerHTML = pontos
+    }
+    this.updatePoint(0)
+}
 
-areaDoJogo.appendChild(bird.element)
-barreiras.pares.forEach(par => areaDoJogo.appendChild(par.element))
+// const barreiras = new Barriers(700, 1200, 200, 400)
+// const bird = new Bird(700)
+// const areaDoJogo = document.querySelector('[p-flappy]')
+// areaDoJogo.appendChild(bird.element)
+// areaDoJogo.appendChild(new Progress().element)
 
-setInterval(() => {
-    barreiras.animar()
-    bird.animar()
-}, 20)
+// barreiras.pares.forEach(par => areaDoJogo.appendChild(par.element))
+
+// setInterval(() => {
+//     barreiras.animar()
+//     bird.animar()
+// }, 20)
+
+function FlappyBird() {
+    let pontos = 0
+
+    const areaDoJogo = document.querySelector('[p-flappy]')
+    const altura = areaDoJogo.clientHeight
+    const largura = areaDoJogo.clientWidth
+    const progresso = new Progress
+    const barreiras = new Barriers(altura, largura, 200, 400,
+        () => progresso.updatePoint(++pontos))
+    const passaro = new Bird(altura)
+
+    areaDoJogo.appendChild(progresso.element)
+    areaDoJogo.appendChild(passaro.element)
+    barreiras.pares.forEach(par => areaDoJogo.appendChild(par.element))
+
+    this.start = () => {
+        //loop do jogo
+        const timer = setInterval(() => {
+            barreiras.animar()
+            passaro.animar()
+        }, 20)
+    }
+}
+
+new FlappyBird().start()
