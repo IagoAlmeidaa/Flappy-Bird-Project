@@ -1,11 +1,16 @@
 
 *{
     box-sizing: border-box;
+    user-select: none;
 }
 
 @font-face{
     font-family: 'Pixel';
     src: url('../fonts/Pixel.ttf');
+}
+
+h1{
+    font-size: 50px;
 }
 
 [p-flappy]{
@@ -61,4 +66,32 @@
     font-family: Pixel;
     font-size: 70px;
     z-index: 100;
+}
+
+.game-over{
+    position: absolute;
+    display: none;
+    z-index: 100;
+    object-fit: contain;
+    width: 800px;
+    height: 200px;
+    margin: auto;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+}
+
+#refresh{
+    border: none;
+    display: none;
+    background-color: transparent;
+    z-index: 100;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 80px;
+    color: white;
+    position: absolute;
+    right: 44%;
+    top: 60%;
 }
