@@ -105,18 +105,29 @@ function Progress() {
     this.updatePoint(0)
 }
 
-// const barreiras = new Barriers(700, 1200, 200, 400)
-// const bird = new Bird(700)
-// const areaDoJogo = document.querySelector('[p-flappy]')
-// areaDoJogo.appendChild(bird.element)
-// areaDoJogo.appendChild(new Progress().element)
+function Overlay(elementA, elementB) {
+    const a = elementA.getBoundingClientRect()
+    const b = elementB.getBoundingClientRect()
 
-// barreiras.pares.forEach(par => areaDoJogo.appendChild(par.element))
+    const horizontal = a.left + a.width >= b.left
+        && b.left + b.width >= a.left
+    const vertical = a.top + a.height >= b.top
+        && b.top + b.height >= a.top
+    return horizontal && vertical
+}
 
-// setInterval(() => {
-//     barreiras.animar()
-//     bird.animar()
-// }, 20)
+function Collision(passaro, barreiras) {
+    let collision = false
+    barreiras.pares.forEach(pairOfBarriers => {
+        if (!collision) {
+            const superior = pairOfBarriers.superior.element
+            const inferior = pairOfBarriers.inferior.element
+            collision = Overlay(passaro.element, superior)
+                || Overlay(passaro.element, inferior)
+        }
+    })
+    return collision
+}
 
 function FlappyBird() {
     let pontos = 0
@@ -138,6 +149,21 @@ function FlappyBird() {
         const timer = setInterval(() => {
             barreiras.animar()
             passaro.animar()
+
+            const img = document.querySelector('img')
+
+            if (Collision(passaro, barreiras)) {
+                clearInterval(timer)
+                img.src = 'img/go.png'
+                img.style.display = 'block'
+
+                var btn = document.querySelector("#refresh");
+                btn.style.display = 'block'
+                btn.addEventListener("click", function () {
+
+                    window.location.reload()
+                });
+            }
         }, 20)
     }
 }
